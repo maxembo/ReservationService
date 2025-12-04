@@ -2,7 +2,7 @@
 using ReservationService.Domain.Venues;
 using Shared;
 
-namespace ReservationService.Application.Abstractions;
+namespace ReservationService.Application.Venues;
 
 public interface IVenuesRepository
 {
