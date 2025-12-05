@@ -43,7 +43,7 @@ public class TransactionManager : ITransactionManager
     {
         try
         {
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesResultAsync(cancellationToken);
             return UnitResult.Success<Error>();
         }
         catch (Exception ex)

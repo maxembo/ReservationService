@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using ReservationService.Domain.Venues;
+using Shared;
 
 namespace ReservationService.Domain.Events;
 
@@ -13,7 +14,8 @@ public class Event
 
     // ef core
     private Event()
-    { }
+    {
+    }
 
     private Event(
         EventId id,
@@ -21,6 +23,8 @@ public class Event
         EventDetails details,
         EventName name,
         DateTime eventDate,
+        DateTime startDate,
+        DateTime endDate,
         IEventInfo info,
         EventType type)
     {
@@ -31,6 +35,9 @@ public class Event
         EventDate = eventDate;
         Info = info;
         Type = type;
+        StartDate = startDate;
+        EndDate = endDate;
+        Status = EventStatus.Planned;
     }
 
     public EventId Id { get; }
@@ -47,17 +54,91 @@ public class Event
 
     public DateTime EventDate { get; private set; }
 
-    public static Result<Event> Create(
-        EventId id,
+    public DateTime StartDate { get; private set; }
+
+    public DateTime EndDate { get; private set; }
+
+    public EventStatus Status { get; private set; }
+
+    public bool IsAvailableForReservation() =>
+        Status != EventStatus.Planned || StartDate >= DateTime.UtcNow;
+
+    public static Result<Event, Error> Create(
         VenueId venueId,
         EventDetails details,
         EventName name,
         DateTime eventDate,
+        DateTime startDate,
+        DateTime endDate,
         IEventInfo info,
         EventType type)
     {
-        var @event = new Event(id, venueId, details, name, eventDate, info, type);
+        if (startDate > endDate || startDate <= DateTime.UtcNow || endDate <= DateTime.UtcNow)
+        {
+            return GeneralErrors.Invalid("startDate or endDate");
+        }
 
-        return Result.Success(@event);
+        return new Event(
+            new EventId(Guid.NewGuid()), venueId, details, name, eventDate, startDate, endDate, info, type);
+    }
+
+    public static Result<Event, Error> CreateConcert(
+        VenueId venueId,
+        EventDetails details,
+        EventName name,
+        DateTime eventDate,
+        DateTime startDate,
+        DateTime endDate,
+        string performer)
+    {
+        if (string.IsNullOrWhiteSpace(performer))
+            return GeneralErrors.Required("performer");
+
+        var concertInfo = new ConcertInfo(performer);
+
+        return new Event(
+            new EventId(Guid.NewGuid()), venueId, details, name, eventDate, startDate, endDate, concertInfo,
+            EventType.Concert);
+    }
+
+    public static Result<Event, Error> CreateOnline(
+        VenueId venueId,
+        EventDetails details,
+        EventName name,
+        DateTime eventDate,
+        DateTime startDate,
+        DateTime endDate,
+        string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return GeneralErrors.Required("url");
+
+        var onlineInfo = new OnlineInfo(url);
+
+        return new Event(
+            new EventId(Guid.NewGuid()), venueId, details, name, eventDate, startDate, endDate, onlineInfo,
+            EventType.Online);
+    }
+
+    public static Result<Event, Error> CreateConference(
+        VenueId venueId,
+        EventDetails details,
+        EventName name,
+        DateTime eventDate,
+        DateTime startDate,
+        DateTime endDate,
+        string speaker,
+        string topic)
+    {
+        if (string.IsNullOrWhiteSpace(speaker))
+            return GeneralErrors.Required("speaker");
+
+        if (string.IsNullOrWhiteSpace(topic))
+            return GeneralErrors.Required("topic");
+
+        var conferenceInfo = new ConferenceInfo(speaker, topic);
+        return new Event(
+            new EventId(Guid.NewGuid()), venueId, details, name, eventDate, startDate, endDate, conferenceInfo,
+            EventType.Conference);
     }
 }

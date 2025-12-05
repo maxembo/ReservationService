@@ -1,8 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using ReservationService.Application.Abstractions;
-using ReservationService.Application.Database;
+using ReservationService.Application.Venues;
 using ReservationService.Domain.Venues;
 using ReservationService.Infrastructure.Postgres.Database;
 using Shared;
