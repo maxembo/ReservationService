@@ -60,8 +60,8 @@ public class Event
 
     public EventStatus Status { get; private set; }
 
-    public bool IsAvailableForReservation() =>
-        Status != EventStatus.Planned || StartDate >= DateTime.UtcNow;
+    public bool IsAvailableForReservation(int capacitySum) =>
+        Status == EventStatus.Planned && StartDate > DateTime.UtcNow && Details.Capacity >= capacitySum;
 
     public static Result<Event, Error> Create(
         VenueId venueId,

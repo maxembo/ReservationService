@@ -16,6 +16,7 @@ public class EventsRepository : IEventsRepository
     public async Task<Result<Event, Error>> GetByIdAsync(EventId id, CancellationToken cancellationToken)
     {
         var @event = await _dbContext.Events
+            .Include(e => e.Details)
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 
         if (@event is null)

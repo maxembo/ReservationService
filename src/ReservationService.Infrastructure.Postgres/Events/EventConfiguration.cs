@@ -60,6 +60,9 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
 
         builder.HasIndex(e => e.EventDate);
 
+        builder.Property(e => e.VenueId)
+            .HasColumnName("venue_id");
+
         // builder.HasIndex(e => e.Name)
         //     .HasDatabaseName("ix_events_name_trgm")
         //     .HasMethod("gin")

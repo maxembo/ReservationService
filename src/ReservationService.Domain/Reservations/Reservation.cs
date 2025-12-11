@@ -26,7 +26,8 @@ public class Reservation
 
         var reservedSeats = seatsIds
             .Select(
-                seatId => ReservationSeat.Create(new ReservationSeatId(Guid.NewGuid()), this, new SeatId(seatId)).Value)
+                seatId => ReservationSeat.Create(
+                    new ReservationSeatId(Guid.NewGuid()), this, new SeatId(seatId), eventId).Value)
             .ToList();
 
         _reservedSeats = reservedSeats;

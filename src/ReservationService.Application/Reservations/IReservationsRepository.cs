@@ -12,4 +12,6 @@ public interface IReservationsRepository
 
     Task<bool> AnySeatsAlreadyReserved(
         EventId eventId, IEnumerable<SeatId> seatIds, CancellationToken cancellationToken);
+
+    public Task<int> GetReservedSeatsCount(EventId eventId, CancellationToken cancellationToken);
 }

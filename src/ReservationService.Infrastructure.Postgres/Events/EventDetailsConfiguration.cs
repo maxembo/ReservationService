@@ -35,5 +35,12 @@ public class EventDetailsConfiguration : IEntityTypeConfiguration<EventDetails>
             .HasForeignKey<EventDetails>(ed => ed.EventId)
             .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_details_events_events");
+
+        builder.Property(ed => ed.LastReservationUtc)
+            .HasColumnType("last_reservation_utc")
+            .IsRequired(false);
+
+        builder.Property(ed => ed.Version)
+            .IsRowVersion();
     }
 }
