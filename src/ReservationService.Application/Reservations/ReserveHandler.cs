@@ -57,7 +57,9 @@ public class ReserveHandler : ICommandHandler<Guid, CreateReserveRequest>
         if (@event.IsAvailableForReservation(reservedSeatCount + request.SeatIds.Count()) == false)
         {
             transaction.Rollback();
-            return GeneralErrors.AlreadyExist("event").ToErrors();
+            return Error
+                .Failure("reservation.unavailable", "Reservation is unavailable")
+                .ToErrors();
         }
 
         // 3. Проверить что места принадлежат мероприятию и площадке
