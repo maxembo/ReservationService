@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using ReservationService.Domain.Users;
 using ReservationService.Domain.Venues;
+using Shared;
 
 namespace ReservationService.Domain.Reservations;
 
@@ -14,7 +15,8 @@ public class Reservation
 
     // ef core
     private Reservation()
-    { }
+    {
+    }
 
     private Reservation(ReservationId id, Guid eventId, UserId userId, IEnumerable<Guid> seatsIds)
     {
@@ -24,15 +26,14 @@ public class Reservation
 
         var reservedSeats = seatsIds
             .Select(
-                seatId => ReservationSeat.Create(new ReservationSeatId(Guid.NewGuid()), this, new SeatId(seatId)).Value)
+                seatId => ReservationSeat.Create(
+                    new ReservationSeatId(Guid.NewGuid()), this, new SeatId(seatId), eventId).Value)
             .ToList();
 
         _reservedSeats = reservedSeats;
     }
 
     public ReservationId Id { get; }
-
-    public Guid SeatId { get; private set; }
 
     public Guid EventId { get; private set; }
 
@@ -44,10 +45,21 @@ public class Reservation
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public static Result<Reservation> Create(ReservationId id, Guid eventId, UserId userId, IEnumerable<Guid> seatsIds)
+    public static Result<Reservation, Error> Create(Guid eventId, UserId userId, IEnumerable<Guid> seatsIds)
     {
-        var reservation = new Reservation(id, eventId, userId, seatsIds);
+        if (eventId == Guid.Empty)
+            return GeneralErrors.Required("eventId");
 
-        return Result.Success(reservation);
+        if (userId.Value == Guid.Empty)
+            return GeneralErrors.Required("userId");
+
+        var seatIdsList = seatsIds?.ToList() ?? [];
+        if (seatIdsList.Count == 0)
+            return GeneralErrors.Required("seatIdsList");
+
+        if (seatIdsList.Any(seatId => seatId == Guid.Empty))
+            return GeneralErrors.Required("seatIdsList");
+
+        return new Reservation(new ReservationId(Guid.NewGuid()), eventId, userId, seatIdsList);
     }
 }

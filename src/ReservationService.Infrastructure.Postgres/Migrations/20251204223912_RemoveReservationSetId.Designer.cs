@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReservationService.Infrastructure.Postgres.Database;
@@ -12,9 +13,11 @@ using ReservationService.Infrastructure.Postgres.Database;
 namespace ReservationService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251204223912_RemoveReservationSetId")]
+    partial class RemoveReservationSetId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,8 +59,7 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                         .HasColumnName("type");
 
                     b.Property<Guid>("VenueId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("venue_id");
+                        .HasColumnType("uuid");
 
                     b.ComplexProperty<Dictionary<string, object>>("Name", "ReservationService.Domain.Events.Event.Name#EventName", b1 =>
                         {
@@ -97,15 +99,6 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("description");
 
-                    b.Property<DateTime?>("LastReservationUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
                     b.HasKey("EventId")
                         .HasName("pk_event_details");
 
@@ -123,16 +116,14 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<Guid>("EventId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("event_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("ReservationStatus")
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id")
                         .HasName("pk_reservations");
@@ -148,21 +139,15 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("event_id");
-
                     b.Property<Guid>("ReservationId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("reservation_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ReservedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("reserved_at");
 
                     b.Property<Guid>("SeatId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("seat_id");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id")
                         .HasName("pk_reservation_seat");
@@ -170,9 +155,6 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                     b.HasIndex("ReservationId");
 
                     b.HasIndex("SeatId");
-
-                    b.HasIndex("EventId", "SeatId")
-                        .IsUnique();
 
                     b.ToTable("reservation_seat", (string)null);
                 });
@@ -224,9 +206,7 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                         .HasColumnName("id");
 
                     b.Property<int>("SeatsLimit")
-                        .HasMaxLength(1000)
-                        .HasColumnType("integer")
-                        .HasColumnName("seats_limit");
+                        .HasColumnType("integer");
 
                     b.ComplexProperty<Dictionary<string, object>>("VenueName", "ReservationService.Domain.Venues.Venue.VenueName#VenueName", b1 =>
                         {

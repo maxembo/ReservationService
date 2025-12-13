@@ -23,7 +23,7 @@ public class EventInfoConverter : ValueConverter<IEventInfo, string>
         string type = split[0];
         string data = split[1];
 
-        return info switch
+        return type switch
         {
             "Concert" => new ConcertInfo(data),
             "Conference" => new ConferenceInfo(data.Split('|')[0], data.Split('|')[1]),

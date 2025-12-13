@@ -25,5 +25,11 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
 
         builder.Property(r => r.CreatedAt)
             .HasColumnName("created_at");
+
+        builder.Property(r => r.EventId)
+            .HasColumnName("event_id");
+
+        builder.Property(r => r.UserId)
+            .HasColumnName("user_id");
     }
 }

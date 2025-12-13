@@ -34,5 +34,19 @@ public class ReservationSeatConfiguration : IEntityTypeConfiguration<Reservation
             .HasForeignKey(s => s.SeatId)
             .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_reservation_seat_seat");
+
+        builder.Property(rs => rs.EventId)
+            .HasColumnName("event_id")
+            .IsRequired();
+
+        builder.Property(r => r.SeatId)
+            .HasColumnName("seat_id")
+            .IsRequired();
+
+        builder.Property(rs => rs.ReservationId)
+            .HasColumnName("reservation_id");
+
+        builder.HasIndex(rs => new { rs.EventId, rs.SeatId })
+            .IsUnique();
     }
 }

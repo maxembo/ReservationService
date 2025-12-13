@@ -40,6 +40,10 @@ public class VenueConfiguration : IEntityTypeConfiguration<Venue>
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(v => v.SeatsLimit)
+            .HasMaxLength(Constants.MAX_SEATS_LIMIT)
+            .HasColumnName("seats_limit");
+
         // 1 вариант
         // builder.HasMany(v => v.Seats)
         //     .WithOne()

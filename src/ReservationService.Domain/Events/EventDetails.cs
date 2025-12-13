@@ -7,8 +7,9 @@ public class EventDetails
 {
     // ef core
     private EventDetails()
-    { }
-    
+    {
+    }
+
     private EventDetails(string description, int capacity)
     {
         Description = description;
@@ -20,6 +21,15 @@ public class EventDetails
     public string Description { get; private set; }
 
     public int Capacity { get; private set; }
+
+    public uint Version { get; private set; }
+
+    public DateTime? LastReservationUtc { get; private set; }
+
+    public void ReserveSeat()
+    {
+        LastReservationUtc = DateTime.UtcNow;
+    }
 
     public static Result<EventDetails> Create(string description, int capacity)
     {

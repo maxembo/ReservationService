@@ -15,6 +15,7 @@ public static class DependencyInjection
     {
         services.AddOpenApi();
         services.AddControllers();
+        services.AddLogging();
 
         return services;
     }

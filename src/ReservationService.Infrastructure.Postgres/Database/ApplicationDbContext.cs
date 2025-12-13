@@ -1,9 +1,13 @@
+using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ReservationService.Application.Database;
+using ReservationService.Domain.Events;
+using ReservationService.Domain.Reservations;
 using ReservationService.Domain.Users;
 using ReservationService.Domain.Venues;
+using Shared;
 
 namespace ReservationService.Infrastructure.Postgres.Database;
 
@@ -14,6 +18,25 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Seat> Seats => Set<Seat>();
+
+    public DbSet<Reservation> Reservations => Set<Reservation>();
+
+    public DbSet<ReservationSeat> ReservationSeats => Set<ReservationSeat>();
+
+    public DbSet<Event> Events => Set<Event>();
+
+    public async Task<UnitResult<Error>> SaveChangesResultAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await SaveChangesAsync(cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Database(null, ex.Message);
+        }
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

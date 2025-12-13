@@ -1,9 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Npgsql;
-using ReservationService.Application.Abstractions;
-using ReservationService.Application.Database;
+using ReservationService.Application.Venues;
 using ReservationService.Domain.Venues;
 using ReservationService.Infrastructure.Postgres.Database;
 using Shared;
@@ -14,7 +12,6 @@ public class EfCoreVenueRepository : IVenuesRepository
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<EfCoreVenueRepository> _logger;
-    private IVenuesRepository _venuesRepositoryImplementation;
 
     public EfCoreVenueRepository(ApplicationDbContext dbContext, ILogger<EfCoreVenueRepository> logger)
     {
@@ -24,20 +21,13 @@ public class EfCoreVenueRepository : IVenuesRepository
 
     public async Task<Result<Guid, Error>> AddAsync(Venue venue, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await _dbContext.Venues.AddAsync(venue, cancellationToken);
+        await _dbContext.Venues.AddAsync(venue, cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+        var saveChangesResultAsync = await _dbContext.SaveChangesResultAsync(cancellationToken);
+        if (saveChangesResultAsync.IsFailure)
+            return saveChangesResultAsync.Error;
 
-            return venue.Id.Value;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Failed to insert Venue.");
-
-            return GeneralErrors.Database(ex.Message);
-        }
+        return venue.Id.Value;
     }
 
     public async Task<Result<Guid, Error>> UpdateNameAsync(
@@ -73,12 +63,12 @@ public class EfCoreVenueRepository : IVenuesRepository
         return UnitResult.Success<Error>();
     }
 
-    // public async Task SaveAsync(CancellationToken cancellationToken = default)
-    // {
-    //     var entry = _dbContext.ChangeTracker.Entries();
-    //
-    //     await _dbContext.SaveChangesAsync(cancellationToken);
-    // }
+// public async Task SaveAsync(CancellationToken cancellationToken = default)
+// {
+//     var entry = _dbContext.ChangeTracker.Entries();
+//
+//     await _dbContext.SaveChangesAsync(cancellationToken);
+// }
 
     public async Task<Result<Venue, Error>> GetByIdAsync(VenueId id, CancellationToken cancellationToken = default)
     {

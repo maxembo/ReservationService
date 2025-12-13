@@ -22,7 +22,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
                 value => new EventId(value))
             .HasColumnName("id");
 
-        builder.ComplexProperty(
+        builder.OwnsOne(
             e => e.Name, eb =>
             {
                 eb.Property(e => e.Value)
@@ -41,6 +41,15 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.Property(e => e.EventDate)
             .HasColumnName("event_date");
 
+        builder.Property(e => e.StartDate)
+            .HasColumnName("start_date");
+
+        builder.Property(e => e.EndDate)
+            .HasColumnName("end_date");
+
+        builder.Property(e => e.Status)
+            .HasColumnName("status");
+
         builder.Property(e => e.Type)
             .HasConversion<string>()
             .HasColumnName("type");
@@ -50,6 +59,9 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasColumnName("info");
 
         builder.HasIndex(e => e.EventDate);
+
+        builder.Property(e => e.VenueId)
+            .HasColumnName("venue_id");
 
         // builder.HasIndex(e => e.Name)
         //     .HasDatabaseName("ix_events_name_trgm")

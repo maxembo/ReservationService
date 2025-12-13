@@ -27,7 +27,6 @@ public class EventDetailsConfiguration : IEntityTypeConfiguration<EventDetails>
 
         builder.Property(ed => ed.Capacity)
             .IsRequired()
-            .HasMaxLength(Constants.MAX_EVENT_DETAILS_CAPACITY)
             .HasColumnName("capacity");
 
         builder.HasOne<Event>()
@@ -35,5 +34,8 @@ public class EventDetailsConfiguration : IEntityTypeConfiguration<EventDetails>
             .HasForeignKey<EventDetails>(ed => ed.EventId)
             .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_details_events_events");
+
+        builder.Property(ed => ed.Version)
+            .IsRowVersion();
     }
 }
