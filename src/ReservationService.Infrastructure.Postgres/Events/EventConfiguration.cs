@@ -22,7 +22,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
                 value => new EventId(value))
             .HasColumnName("id");
 
-        builder.ComplexProperty(
+        builder.OwnsOne(
             e => e.Name, eb =>
             {
                 eb.Property(e => e.Value)

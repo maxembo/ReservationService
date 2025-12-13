@@ -48,7 +48,7 @@ public class ReserveHandler : ICommandHandler<Guid, CreateReserveRequest>
 
         using var transaction = transactionResult.Value;
 
-        var (_, isFailure, @event, error) = await _eventsRepository.GetByIdAsync(eventId, cancellationToken);
+        var (_, isFailure, @event, error) = await _eventsRepository.GetByIdWithLockAsync(eventId, cancellationToken);
         if (isFailure)
             return error.ToErrors();
 

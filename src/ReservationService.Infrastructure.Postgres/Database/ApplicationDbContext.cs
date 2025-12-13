@@ -21,6 +21,8 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
 
     public DbSet<Reservation> Reservations => Set<Reservation>();
 
+    public DbSet<ReservationSeat> ReservationSeats => Set<ReservationSeat>();
+
     public DbSet<Event> Events => Set<Event>();
 
     public async Task<UnitResult<Error>> SaveChangesResultAsync(CancellationToken cancellationToken = default)
