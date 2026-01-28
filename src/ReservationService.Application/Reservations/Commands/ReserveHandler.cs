@@ -10,7 +10,7 @@ using ReservationService.Domain.Users;
 using ReservationService.Domain.Venues;
 using Shared;
 
-namespace ReservationService.Application.Reservations;
+namespace ReservationService.Application.Reservations.Commands;
 
 public class ReserveHandler : ICommandHandler<Guid, CreateReserveRequest>
 {

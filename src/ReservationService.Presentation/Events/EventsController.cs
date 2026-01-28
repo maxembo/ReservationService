@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservationService.Application.Events;
+using ReservationService.Application.Events.Queries;
 using ReservationService.Contracts.Events;
 
 namespace ReservationService.Presentation.Events;

@@ -1,20 +1,24 @@
-﻿using ReservationService.Contracts.Events;
+﻿using Microsoft.EntityFrameworkCore;
+using ReservationService.Application.Database;
+using ReservationService.Contracts.Events;
 using ReservationService.Domain.Events;
 
-namespace ReservationService.Application.Events;
+namespace ReservationService.Application.Events.Queries;
 
 public class GetEventByIdHandler
 {
-    private readonly IEventsRepository _eventsRepository;
+    private readonly IReadDbContext _readDbContext;
 
-    public GetEventByIdHandler(IEventsRepository eventsRepository)
+    public GetEventByIdHandler(IReadDbContext readDbContext)
     {
-        _eventsRepository = eventsRepository;
+        _readDbContext = readDbContext;
     }
 
-    public async Task<GetEventDto?> Handle(GetEventByIdRequest request, CancellationToken cancellationToken)
+    public async Task<GetEventDto?> Handle(GetEventByIdRequest query, CancellationToken cancellationToken)
     {
-        var @event = await _eventsRepository.GetById(new EventId(request.EventId), cancellationToken);
+        var @event = await _readDbContext.EventsRead
+            .Include(e => e.Details)
+            .FirstOrDefaultAsync(e => e.Id == new EventId(query.EventId), cancellationToken);
 
         if (@event is null)
         {

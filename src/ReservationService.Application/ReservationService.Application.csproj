@@ -13,12 +13,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
       <PackageReference Include="Scopes" Version="0.0.16" />
       <PackageReference Include="Scrutor" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Venues\Seats\" />
+      <Folder Include="Venues\Commands\" />
     </ItemGroup>
 
 </Project>

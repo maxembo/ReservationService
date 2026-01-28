@@ -5,7 +5,7 @@ using ReservationService.Contracts.Venues.UpdateVenue;
 using ReservationService.Domain.Venues;
 using Shared;
 
-namespace ReservationService.Application.Venues.UpdateVenue;
+namespace ReservationService.Application.Venues.Commands.UpdateVenue;
 
 public class UpdateVenueNameHandler : ICommandHandler<Guid, UpdateVenueNameRequest>
 {
