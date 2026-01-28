@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IEventsRepository, EventsRepository>();
 
         services.AddSingleton<INpgsqlConnectionFactory, NpgsqlConnectionFactory>();
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
         services.AddScoped<ITransactionManager, TransactionManager>();
 

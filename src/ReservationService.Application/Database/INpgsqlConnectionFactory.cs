@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace ReservationService.Infrastructure.Postgres.Database;
+namespace ReservationService.Application.Database;
 
 public interface INpgsqlConnectionFactory
 {

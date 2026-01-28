@@ -1,4 +1,6 @@
-﻿namespace ReservationService.Contracts.Events;
+﻿using ReservationService.Contracts.Venues.Seats;
+
+namespace ReservationService.Contracts.Events;
 
 public record GetEventDto
 {
@@ -25,4 +27,6 @@ public record GetEventDto
     public DateTime EndDate { get; init; }
 
     public string Status { get; init; } = null!;
+
+    public List<SeatDto> Seats { get; init; } = [];
 }

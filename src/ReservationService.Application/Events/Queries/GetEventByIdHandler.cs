@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ReservationService.Application.Database;
 using ReservationService.Contracts.Events;
+using ReservationService.Contracts.Venues.Seats;
 using ReservationService.Domain.Events;
 
 namespace ReservationService.Application.Events.Queries;
@@ -16,29 +17,37 @@ public class GetEventByIdHandler
 
     public async Task<GetEventDto?> Handle(GetEventByIdRequest query, CancellationToken cancellationToken)
     {
-        var @event = await _readDbContext.EventsRead
+        return await _readDbContext.EventsRead
             .Include(e => e.Details)
-            .FirstOrDefaultAsync(e => e.Id == new EventId(query.EventId), cancellationToken);
-
-        if (@event is null)
-        {
-            return null;
-        }
-
-        return new GetEventDto()
-        {
-            Id = @event.Id.Value,
-            VenueId = @event.VenueId.Value,
-            Name = @event.Name.Value,
-            Capacity = @event.Details.Capacity,
-            Description = @event.Details.Description,
-            Info = @event.Info.ToString(),
-            Status = @event.Status.ToString(),
-            LastReservationUtc = @event.Details.LastReservationUtc,
-            Type = @event.Type.ToString(),
-            StartDate = @event.StartDate,
-            EndDate = @event.EndDate,
-            EventDate = @event.EventDate,
-        };
+            .Where(e => e.Id == new EventId(query.EventId))
+            .Select(
+                e => new GetEventDto
+                {
+                    Id = e.Id.Value,
+                    VenueId = e.VenueId.Value,
+                    Name = e.Name.Value,
+                    Capacity = e.Details.Capacity,
+                    Description = e.Details.Description,
+                    Info = e.Info.ToString(),
+                    Status = e.Status.ToString(),
+                    LastReservationUtc = e.Details.LastReservationUtc,
+                    Type = e.Type.ToString(),
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    EventDate = e.EventDate,
+                    Seats = _readDbContext.SeatsRead
+                        .Where(s => s.VenueId == e.VenueId)
+                        .OrderBy(s => s.RowNumber)
+                        .ThenBy(s => s.SeatNumber)
+                        .Select(
+                            s => new SeatDto
+                            {
+                                Id = s.Id.Value,
+                                RowNumber = s.RowNumber,
+                                SeatNumber = s.SeatNumber,
+                                VenueId = s.VenueId.Value,
+                            }).ToList(),
+                })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }
