@@ -1,6 +1,6 @@
 ﻿namespace ReservationService.Contracts.Venues.Seats;
 
-public record SeatDto
+public record AvailableSeatDto
 {
     public Guid Id { get; init; }
 

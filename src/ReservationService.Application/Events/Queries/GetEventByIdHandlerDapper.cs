@@ -20,7 +20,7 @@ public class GetEventByIdHandlerDapper
 
         GetEventDto? eventDto = null;
 
-        await connection.QueryAsync<GetEventDto, SeatDto, GetEventDto>(
+        await connection.QueryAsync<GetEventDto, AvailableSeatDto, GetEventDto>(
             """
             SELECT e.id,
                    e.venue_id,
@@ -33,11 +33,14 @@ public class GetEventByIdHandlerDapper
                    e.info,
                    ed.capacity,
                    ed.description,
+                  COUNT(*) OVER () AS total_seats,
+                  COUNT(rs.seat_id) OVER () AS reserved_seats,
+                  COUNT(*) OVER () - COUNT(rs.seat_id) OVER () AS available_seats,
                    s.id,
                    s.venue_id,
                    s.row_number,
                    s.seat_number,
-                   rs.id is null as is_available
+                   rs is null as is_available
             FROM events e 
             JOIN event_details ed ON ed.event_id = e.id
             JOIN seats s ON e.venue_id = s.venue_id

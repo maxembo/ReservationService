@@ -28,5 +28,11 @@ public record GetEventDto
 
     public string Status { get; init; } = null!;
 
-    public List<SeatDto> Seats { get; init; } = [];
+    public List<AvailableSeatDto> Seats { get; init; } = [];
+
+    public int TotalSeats { get; init; }
+
+    public int AvailableSeats { get; init; }
+
+    public int ReservedSeats { get; init; }
 }

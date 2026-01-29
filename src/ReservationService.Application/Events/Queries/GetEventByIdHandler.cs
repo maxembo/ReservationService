@@ -21,34 +21,42 @@ public class GetEventByIdHandler
             .Include(e => e.Details)
             .Where(e => e.Id == new EventId(query.EventId))
             .Select(
-                e => new GetEventDto
+                @event => new GetEventDto
                 {
-                    Id = e.Id.Value,
-                    VenueId = e.VenueId.Value,
-                    Name = e.Name.Value,
-                    Capacity = e.Details.Capacity,
-                    Description = e.Details.Description,
-                    Info = e.Info.ToString(),
-                    Status = e.Status.ToString(),
-                    LastReservationUtc = e.Details.LastReservationUtc,
-                    Type = e.Type.ToString(),
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    EventDate = e.EventDate,
-                    Seats = _readDbContext.SeatsRead
-                        .Where(s => s.VenueId == e.VenueId)
-                        .OrderBy(s => s.RowNumber)
-                        .ThenBy(s => s.SeatNumber)
-                        .Select(
-                            s => new SeatDto
+                    Id = @event.Id.Value,
+                    VenueId = @event.VenueId.Value,
+                    Name = @event.Name.Value,
+                    Capacity = @event.Details.Capacity,
+                    Description = @event.Details.Description,
+                    Info = @event.Info.ToString(),
+                    Status = @event.Status.ToString(),
+                    LastReservationUtc = @event.Details.LastReservationUtc,
+                    Type = @event.Type.ToString(),
+                    StartDate = @event.StartDate,
+                    EndDate = @event.EndDate,
+                    EventDate = @event.EventDate,
+                    Seats = (from s in _readDbContext.SeatsRead
+                        where s.VenueId == @event.VenueId
+                        join rs in _readDbContext.ReservationSeatsRead on
+                            new { SeatId = s.Id, EventId = @event.Id, } equals new
                             {
-                                Id = s.Id.Value,
-                                RowNumber = s.RowNumber,
-                                SeatNumber = s.SeatNumber,
-                                VenueId = s.VenueId.Value,
-                                IsAvailable = !_readDbContext.ReservationSeatsRead.Any(
-                                    rs => rs.SeatId == s.Id && rs.EventId == e.Id),
-                            }).ToList(),
+                                SeatId = rs.SeatId, EventId = rs.EventId,
+                            } into reservations
+                        from r in reservations.DefaultIfEmpty()
+                        where @event.Id == new EventId(query.EventId)
+                        orderby s.RowNumber, s.SeatNumber
+                        select new AvailableSeatDto()
+                        {
+                            Id = s.Id.Value,
+                            RowNumber = s.RowNumber,
+                            SeatNumber = s.SeatNumber,
+                            VenueId = s.VenueId.Value,
+                            IsAvailable = r == null,
+                        }).ToList(),
+                    TotalSeats = _readDbContext.SeatsRead.Count(s => s.VenueId == @event.VenueId),
+                    ReservedSeats = _readDbContext.ReservationSeatsRead.Count(rs => rs.EventId == @event.Id),
+                    AvailableSeats = _readDbContext.SeatsRead.Count(s => s.VenueId == @event.VenueId) -
+                                     _readDbContext.ReservationSeatsRead.Count(rs => rs.EventId == @event.Id),
                 })
             .FirstOrDefaultAsync(cancellationToken);
     }
