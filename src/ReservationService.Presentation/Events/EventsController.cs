@@ -30,4 +30,14 @@ public class EventsController : ControllerBase
 
         return Ok(@event);
     }
+
+    [HttpGet]
+    public async Task<ActionResult<GetEventsDto>> GetEvents(
+        [FromQuery] GetEventsRequest request,
+        [FromServices] GetEventsHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var events = await handler.Handle(request, cancellationToken);
+        return Ok(events);
+    }
 }

@@ -3,6 +3,7 @@ using ReservationService.Application.Database;
 using ReservationService.Contracts.Events;
 using ReservationService.Contracts.Venues.Seats;
 using ReservationService.Domain.Events;
+using ReservationService.Domain.Reservations;
 
 namespace ReservationService.Application.Events.Queries;
 
@@ -54,9 +55,15 @@ public class GetEventByIdHandler
                             IsAvailable = r == null,
                         }).ToList(),
                     TotalSeats = _readDbContext.SeatsRead.Count(s => s.VenueId == @event.VenueId),
-                    ReservedSeats = _readDbContext.ReservationSeatsRead.Count(rs => rs.EventId == @event.Id),
+                    ReservedSeats = _readDbContext.ReservationSeatsRead.Count(
+                        rs => rs.EventId == @event.Id &&
+                              (rs.Reservation.ReservationStatus == ReservationStatus.Confirmed ||
+                               rs.Reservation.ReservationStatus == ReservationStatus.Pending)),
                     AvailableSeats = _readDbContext.SeatsRead.Count(s => s.VenueId == @event.VenueId) -
-                                     _readDbContext.ReservationSeatsRead.Count(rs => rs.EventId == @event.Id),
+                                     _readDbContext.ReservationSeatsRead.Count(
+                                         rs => rs.EventId == @event.Id &&
+                                               (rs.Reservation.ReservationStatus == ReservationStatus.Confirmed ||
+                                                rs.Reservation.ReservationStatus == ReservationStatus.Pending)),
                 })
             .FirstOrDefaultAsync(cancellationToken);
     }

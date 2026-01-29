@@ -10,7 +10,7 @@ public record EventName
         Value = value;
     }
 
-    public string Value { get; set; }
+    public string Value { get; }
 
     public static Result<EventName> Create(string value)
     {
