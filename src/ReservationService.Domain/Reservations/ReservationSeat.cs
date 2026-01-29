@@ -10,7 +10,7 @@ public class ReservationSeat
     private ReservationSeat()
     { }
 
-    private ReservationSeat(ReservationSeatId id, Reservation reservation, SeatId seatId, Guid eventId)
+    private ReservationSeat(ReservationSeatId id, Reservation reservation, SeatId seatId, EventId eventId)
     {
         Id = id;
         Reservation = reservation;
@@ -26,12 +26,12 @@ public class ReservationSeat
 
     public SeatId SeatId { get; private set; }
 
-    public Guid EventId { get; private set; }
+    public EventId EventId { get; private set; }
 
     public DateTime ReservedAt { get; private set; } = DateTime.UtcNow;
 
     public static Result<ReservationSeat> Create(
-        ReservationSeatId id, Reservation reservation, SeatId seatId, Guid eventId)
+        ReservationSeatId id, Reservation reservation, SeatId seatId, EventId eventId)
     {
         var reservationSeat = new ReservationSeat(id, reservation, seatId, eventId);
 

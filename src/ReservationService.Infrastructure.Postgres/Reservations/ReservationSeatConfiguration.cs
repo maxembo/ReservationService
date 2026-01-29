@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ReservationService.Domain.Events;
 using ReservationService.Domain.Reservations;
 using ReservationService.Domain.Venues;
 
@@ -36,6 +37,9 @@ public class ReservationSeatConfiguration : IEntityTypeConfiguration<Reservation
             .HasConstraintName("fk_reservation_seat_seat");
 
         builder.Property(rs => rs.EventId)
+            .HasConversion(
+                id => id.Value,
+                value => new EventId(value))
             .HasColumnName("event_id")
             .IsRequired();
 

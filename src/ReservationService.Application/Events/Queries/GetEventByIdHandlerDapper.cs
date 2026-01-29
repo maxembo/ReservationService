@@ -1,20 +1,16 @@
 ﻿using Dapper;
-using Microsoft.EntityFrameworkCore;
 using ReservationService.Application.Database;
 using ReservationService.Contracts.Events;
 using ReservationService.Contracts.Venues.Seats;
-using ReservationService.Domain.Events;
 
 namespace ReservationService.Application.Events.Queries;
 
 public class GetEventByIdHandlerDapper
 {
-    private readonly IReadDbContext _readDbContext;
     private readonly INpgsqlConnectionFactory _connectionFactory;
 
-    public GetEventByIdHandlerDapper(IReadDbContext readDbContext, INpgsqlConnectionFactory connectionFactory)
+    public GetEventByIdHandlerDapper(INpgsqlConnectionFactory connectionFactory)
     {
-        _readDbContext = readDbContext;
         _connectionFactory = connectionFactory;
     }
 
@@ -40,10 +36,12 @@ public class GetEventByIdHandlerDapper
                    s.id,
                    s.venue_id,
                    s.row_number,
-                   s.seat_number
+                   s.seat_number,
+                   rs.id is null as is_available
             FROM events e 
             JOIN event_details ed ON ed.event_id = e.id
             JOIN seats s ON e.venue_id = s.venue_id
+            LEFT JOIN reservation_seat rs ON s.id = rs.seat_id and rs.event_id = e.id
             WHERE e.id = @eventId
             ORDER BY row_number, seat_number
             """,

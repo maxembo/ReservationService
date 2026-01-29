@@ -33,7 +33,7 @@ public class SeatsRepository : ISeatsRepository
                 s => !_context.ReservationSeats.Any(
                     rs =>
                         (rs.SeatId == s.Id &&
-                         rs.EventId == eventId.Value &&
+                         rs.EventId == eventId &&
                          rs.Reservation.ReservationStatus == ReservationStatus.Confirmed) ||
                         rs.Reservation.ReservationStatus == ReservationStatus.Pending))
             .ToListAsync(cancellationToken);

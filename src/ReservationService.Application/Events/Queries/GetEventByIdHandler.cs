@@ -46,6 +46,8 @@ public class GetEventByIdHandler
                                 RowNumber = s.RowNumber,
                                 SeatNumber = s.SeatNumber,
                                 VenueId = s.VenueId.Value,
+                                IsAvailable = !_readDbContext.ReservationSeatsRead.Any(
+                                    rs => rs.SeatId == s.Id && rs.EventId == e.Id),
                             }).ToList(),
                 })
             .FirstOrDefaultAsync(cancellationToken);

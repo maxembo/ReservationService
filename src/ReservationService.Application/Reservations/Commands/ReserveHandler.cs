@@ -75,7 +75,7 @@ public class ReserveHandler : ICommandHandler<Guid, CreateReserveRequest>
         }
 
         // Создать Reservation c ReservedSeats
-        var reservationResult = Reservation.Create(request.EventId, userId, request.SeatIds);
+        var reservationResult = Reservation.Create(new EventId(request.EventId), userId, request.SeatIds);
         if (reservationResult.IsFailure)
         {
             transaction.Rollback();

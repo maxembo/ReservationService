@@ -9,4 +9,6 @@ public record SeatDto
     public int SeatNumber { get; init; }
 
     public Guid VenueId { get; init; }
+    
+    public bool IsAvailable { get; init; }
 }
