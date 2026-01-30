@@ -44,9 +44,9 @@ public class GetEventsHandler
         {
             eventsQuery = eventsQuery.Where(
                 e => _readDbContext.SeatsRead.Count(s => s.VenueId == e.VenueId) -
-                     _readDbContext.ReservationsRead.Count(
-                         rs => rs.EventId == e.Id && (rs.ReservationStatus == ReservationStatus.Confirmed ||
-                                                      rs.ReservationStatus == ReservationStatus.Pending)) >=
+                     _readDbContext.ReservationSeatsRead.Count(
+                         rs => rs.EventId == e.Id && (rs.Reservation.ReservationStatus == ReservationStatus.Confirmed ||
+                                                      rs.Reservation.ReservationStatus == ReservationStatus.Pending)) >=
                      query.MinAvailableSeats.Value);
         }
 

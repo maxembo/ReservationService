@@ -11,6 +11,7 @@ public static class DependencyInjection
         services.AddScoped<GetEventByIdHandler>();
         services.AddScoped<GetEventByIdHandlerDapper>();
         services.AddScoped<GetEventsHandler>();
+        services.AddScoped<GetEventsHandlerDapper>();
 
         var assembly = typeof(DependencyInjection).Assembly;
 

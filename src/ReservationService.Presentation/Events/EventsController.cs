@@ -40,4 +40,15 @@ public class EventsController : ControllerBase
         var events = await handler.Handle(request, cancellationToken);
         return Ok(events);
     }
+
+    [HttpGet("dapper")]
+    public async Task<ActionResult<GetEventsDto>> GetEventsDapper(
+        [FromServices] GetEventsHandlerDapper handler,
+        [FromQuery] GetEventsRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var events = await handler.Handle(request, cancellationToken);
+
+        return Ok(events);
+    }
 }
