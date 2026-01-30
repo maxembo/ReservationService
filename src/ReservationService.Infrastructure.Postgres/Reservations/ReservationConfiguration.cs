@@ -28,6 +28,7 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
             .HasColumnName("eventId");
 
         builder.Property(r => r.ReservationStatus)
+            .HasConversion<string>()
             .HasColumnName("status");
 
         builder.Property(r => r.CreatedAt)

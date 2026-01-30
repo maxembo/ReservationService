@@ -32,10 +32,10 @@ public class SeatsRepository : ISeatsRepository
             .Where(
                 s => !_context.ReservationSeats.Any(
                     rs =>
-                        (rs.SeatId == s.Id &&
+                        rs.SeatId == s.Id &&
                          rs.EventId == eventId &&
-                         rs.Reservation.ReservationStatus == ReservationStatus.Confirmed) ||
-                        rs.Reservation.ReservationStatus == ReservationStatus.Pending))
+                         (rs.Reservation.ReservationStatus == ReservationStatus.Confirmed ||
+                        rs.Reservation.ReservationStatus == ReservationStatus.Pending)))
             .ToListAsync(cancellationToken);
 
         return seats;

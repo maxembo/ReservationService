@@ -53,7 +53,9 @@ public class GetEventsHandler
         var totalCount = await eventsQuery.LongCountAsync(cancellationToken);
 
         eventsQuery = eventsQuery
-            .OrderBy(e => e.EventDate)
+            .OrderBy(e => e.EventDate);
+
+        eventsQuery = eventsQuery
             .Skip((query.Pagination.Page - 1) * query.Pagination.PageSize)
             .Take(query.Pagination.PageSize);
 
