@@ -8,5 +8,7 @@ public interface IEventsRepository
 {
     Task<Result<Event, Error>> GetByIdAsync(EventId id, CancellationToken cancellationToken);
 
-    public Task<Result<Event, Error>> GetByIdWithLockAsync(EventId id, CancellationToken cancellationToken);
+    Task<Result<Event, Error>> GetByIdWithLockAsync(EventId id, CancellationToken cancellationToken);
+
+    Task<Event?> GetById(EventId eventId, CancellationToken cancellationToken);
 }

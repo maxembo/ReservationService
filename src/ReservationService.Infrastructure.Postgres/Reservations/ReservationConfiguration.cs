@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ReservationService.Domain.Events;
 using ReservationService.Domain.Reservations;
 using ReservationService.Domain.Users;
 
@@ -20,7 +21,14 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
                 value => new ReservationId(value))
             .HasColumnName("id");
 
+        builder.Property(r => r.EventId)
+            .HasConversion(
+                id => id.Value,
+                value => new EventId(value))
+            .HasColumnName("eventId");
+
         builder.Property(r => r.ReservationStatus)
+            .HasConversion<string>()
             .HasColumnName("status");
 
         builder.Property(r => r.CreatedAt)

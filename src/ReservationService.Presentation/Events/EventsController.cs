@@ -1,0 +1,54 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using ReservationService.Application.Events;
+using ReservationService.Application.Events.Queries;
+using ReservationService.Contracts.Events;
+
+namespace ReservationService.Presentation.Events;
+
+[ApiController]
+[Route("/api/events")]
+public class EventsController : ControllerBase
+{
+    [HttpGet("/{eventId:guid}")]
+    public async Task<ActionResult<GetEventDto>> GetById(
+        [FromRoute] Guid eventId,
+        [FromServices] GetEventByIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var @event = await handler.Handle(new GetEventByIdRequest(eventId), cancellationToken);
+
+        return Ok(@event);
+    }
+
+    [HttpGet("/{eventId:guid}/dapper")]
+    public async Task<ActionResult<GetEventDto>> GetByIdDapper(
+        [FromRoute] Guid eventId,
+        [FromServices] GetEventByIdHandlerDapper handler,
+        CancellationToken cancellationToken = default)
+    {
+        var @event = await handler.Handle(new GetEventByIdRequest(eventId), cancellationToken);
+
+        return Ok(@event);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<GetEventsDto>> GetEvents(
+        [FromQuery] GetEventsRequest request,
+        [FromServices] GetEventsHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var events = await handler.Handle(request, cancellationToken);
+        return Ok(events);
+    }
+
+    [HttpGet("dapper")]
+    public async Task<ActionResult<GetEventsDto>> GetEventsDapper(
+        [FromServices] GetEventsHandlerDapper handler,
+        [FromQuery] GetEventsRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var events = await handler.Handle(request, cancellationToken);
+
+        return Ok(events);
+    }
+}

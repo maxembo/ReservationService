@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using ReservationService.Domain.Events;
 using ReservationService.Domain.Users;
 using ReservationService.Domain.Venues;
 using Shared;
@@ -18,7 +19,7 @@ public class Reservation
     {
     }
 
-    private Reservation(ReservationId id, Guid eventId, UserId userId, IEnumerable<Guid> seatsIds)
+    private Reservation(ReservationId id, EventId eventId, UserId userId, IEnumerable<Guid> seatsIds)
     {
         Id = id;
         EventId = eventId;
@@ -35,7 +36,7 @@ public class Reservation
 
     public ReservationId Id { get; }
 
-    public Guid EventId { get; private set; }
+    public EventId EventId { get; private set; }
 
     public UserId UserId { get; private set; }
 
@@ -45,9 +46,9 @@ public class Reservation
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public static Result<Reservation, Error> Create(Guid eventId, UserId userId, IEnumerable<Guid> seatsIds)
+    public static Result<Reservation, Error> Create(EventId eventId, UserId userId, IEnumerable<Guid> seatsIds)
     {
-        if (eventId == Guid.Empty)
+        if (eventId.Value == Guid.Empty)
             return GeneralErrors.Required("eventId");
 
         if (userId.Value == Guid.Empty)

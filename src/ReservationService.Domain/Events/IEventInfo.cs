@@ -1,3 +1,6 @@
 ﻿namespace ReservationService.Domain.Events;
 
-public interface IEventInfo;
+public interface IEventInfo
+{
+    string ToString();
+}

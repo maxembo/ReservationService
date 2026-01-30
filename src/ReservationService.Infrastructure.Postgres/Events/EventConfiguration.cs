@@ -48,6 +48,7 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasColumnName("end_date");
 
         builder.Property(e => e.Status)
+            .HasConversion<string>()
             .HasColumnName("status");
 
         builder.Property(e => e.Type)

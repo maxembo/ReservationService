@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ReservationService.Application.Database;
 using ReservationService.Application.Events;
@@ -12,9 +13,14 @@ namespace ReservationService.Infrastructure.Postgres;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructureDependencies(
+        this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<ApplicationDbContext>();
+        services.AddScoped<ApplicationDbContext>(
+            _ => new ApplicationDbContext(configuration.GetConnectionString("ReservationServiceDb")!));
+
+        services.AddScoped<IReadDbContext, ApplicationDbContext>(
+            _ => new ApplicationDbContext(configuration.GetConnectionString("ReservationServiceDb")!));
 
         services.AddScoped<IVenuesRepository, EfCoreVenueRepository>();
         services.AddScoped<ISeatsRepository, SeatsRepository>();
@@ -22,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IEventsRepository, EventsRepository>();
 
         services.AddSingleton<INpgsqlConnectionFactory, NpgsqlConnectionFactory>();
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
         services.AddScoped<ITransactionManager, TransactionManager>();
 

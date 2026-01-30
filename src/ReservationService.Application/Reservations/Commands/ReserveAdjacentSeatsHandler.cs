@@ -10,7 +10,7 @@ using ReservationService.Domain.Users;
 using ReservationService.Domain.Venues;
 using Shared;
 
-namespace ReservationService.Application.Reservations;
+namespace ReservationService.Application.Reservations.Commands;
 
 public class ReserveAdjacentSeatsHandler : ICommandHandler<Guid, CreateReserveAdjacentSeatsRequest>
 {
@@ -92,7 +92,7 @@ public class ReserveAdjacentSeatsHandler : ICommandHandler<Guid, CreateReserveAd
             .Select(s => s.Id)
             .ToList();
 
-        var reservationResult = Reservation.Create(eventId.Value, userId, seatIds.Select(si => si.Value));
+        var reservationResult = Reservation.Create(eventId, userId, seatIds.Select(si => si.Value));
         if (reservationResult.IsFailure)
         {
             transaction.Rollback();

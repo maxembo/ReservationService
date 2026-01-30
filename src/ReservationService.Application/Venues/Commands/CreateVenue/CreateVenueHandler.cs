@@ -1,11 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using ReservationService.Application.Abstractions;
-using ReservationService.Application.Database;
 using ReservationService.Contracts.Venues.CreateVenue;
 using ReservationService.Domain.Venues;
 using Shared;
 
-namespace ReservationService.Application.Venues.CreateVenue;
+namespace ReservationService.Application.Venues.Commands.CreateVenue;
 
 public class CreateVenueHandler : ICommandHandler<Guid, CreateVenueRequest>
 {

@@ -1,6 +1,5 @@
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ReservationService.Application.Database;
 using ReservationService.Domain.Events;
@@ -11,7 +10,7 @@ using Shared;
 
 namespace ReservationService.Infrastructure.Postgres.Database;
 
-public class ApplicationDbContext(IConfiguration configuration) : DbContext
+public class ApplicationDbContext(string connectionString) : DbContext, IReadDbContext
 {
     public DbSet<Venue> Venues => Set<Venue>();
 
@@ -24,6 +23,18 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
     public DbSet<ReservationSeat> ReservationSeats => Set<ReservationSeat>();
 
     public DbSet<Event> Events => Set<Event>();
+
+    public IQueryable<Event> EventsRead => Set<Event>().AsNoTracking().AsQueryable();
+
+    public IQueryable<Reservation> ReservationsRead => Set<Reservation>().AsNoTracking().AsQueryable();
+
+    public IQueryable<Seat> SeatsRead => Set<Seat>().AsNoTracking().AsQueryable();
+
+    public IQueryable<Venue> VenuesRead => Set<Venue>().AsNoTracking().AsQueryable();
+
+    public IQueryable<ReservationSeat> ReservationSeatsRead => Set<ReservationSeat>().AsNoTracking().AsQueryable();
+
+    public IQueryable<User> UsersRead => Set<User>().AsNoTracking().AsQueryable();
 
     public async Task<UnitResult<Error>> SaveChangesResultAsync(CancellationToken cancellationToken = default)
     {
@@ -40,7 +51,7 @@ public class ApplicationDbContext(IConfiguration configuration) : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString("ReservationServiceDb"));
+        optionsBuilder.UseNpgsql(connectionString);
 
         optionsBuilder.EnableDetailedErrors();
         optionsBuilder.EnableSensitiveDataLogging();

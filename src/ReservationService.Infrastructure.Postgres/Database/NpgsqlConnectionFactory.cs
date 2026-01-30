@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using ReservationService.Application.Database;
 
 namespace ReservationService.Infrastructure.Postgres.Database;
 

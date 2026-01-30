@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ReservationService.Infrastructure.Postgres.Database;
@@ -12,9 +13,11 @@ using ReservationService.Infrastructure.Postgres.Database;
 namespace ReservationService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260128102705_StatusToString")]
+    partial class StatusToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,9 +118,8 @@ namespace ReservationService.Infrastructure.Postgres.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("event_id");
 
-                    b.Property<string>("ReservationStatus")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<int>("ReservationStatus")
+                        .HasColumnType("integer")
                         .HasColumnName("status");
 
                     b.Property<Guid>("UserId")

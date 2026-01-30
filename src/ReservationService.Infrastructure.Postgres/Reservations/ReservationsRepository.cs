@@ -30,7 +30,7 @@ public class ReservationsRepository : IReservationsRepository
         EventId eventId, IEnumerable<SeatId> seatIds, CancellationToken cancellationToken)
     {
         var hasSeatsReserved = await _dbContext.Reservations
-            .Where(r => r.EventId == eventId.Value)
+            .Where(r => r.EventId == eventId)
             .Where(r => r.ReservedSeats.Any(rs => seatIds.Contains(rs.SeatId)))
             .AnyAsync(cancellationToken);
 
@@ -44,7 +44,7 @@ public class ReservationsRepository : IReservationsRepository
         //     $"SELECT capacity FROM event_details WHERE event_id = {eventId.Value} FOR UPDATE", cancellationToken);
 
         return await _dbContext.Reservations
-            .Where(r => r.EventId == eventId.Value)
+            .Where(r => r.EventId == eventId)
             .Where(
                 r => r.ReservationStatus == ReservationStatus.Confirmed ||
                      r.ReservationStatus == ReservationStatus.Pending)

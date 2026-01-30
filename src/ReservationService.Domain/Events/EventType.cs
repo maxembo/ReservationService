@@ -4,5 +4,5 @@ public enum EventType
 {
     Concert,
     Conference,
-    Online
+    Online,
 }
