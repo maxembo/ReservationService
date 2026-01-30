@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Linq.Expressions;
+using Dapper;
 using ReservationService.Application.Database;
 using ReservationService.Contracts.Events;
 
@@ -77,45 +78,72 @@ public class GetEventsHandlerDapper
 
         string whereClause = conditions.Count > 0 ? "WHERE " + string.Join(" AND ", conditions) : string.Empty;
 
+        string orderByField = query.SortBy?.ToLower() switch
+        {
+            "date" => "event_date",
+            "name" => "name",
+            "type" => "type",
+            "status" => "status",
+            "popularity" => "popularity_percentage",
+            _ => "event_date"
+        };
+
+        string sortDirection = query.SortDirection?.ToLower() == "asc"
+            ? "asc"
+            : "desc";
+
+        string orderByClause = $"ORDER BY {orderByField} {sortDirection}";
+
         long? totalCount = null;
 
         var events = await connection.QueryAsync<EventDto, long, EventDto>(
             $"""
-             SELECT e.id,
-                    e.venue_id,
-                    e.name,
-                    e.type,
-                    e.event_date,
-                    e.start_date,
-                    e.end_date,
-                    e.status,
-                    e.info,
-                    ed.capacity,
-                    ed.description,
+             WITH event_stats AS (SELECT e.id,
+                                         e.venue_id,
+                                         e.name,
+                                         e.type,
+                                         e.event_date,
+                                         e.start_date,
+                                         e.end_date,
+                                         e.status,
+                                         e.info,
+                                         ed.capacity,
+                                         ed.description,
              
-                    (SELECT COUNT(*)
-                     FROM seats s
-                     WHERE s.venue_id = e.venue_id) as total_seats,
+                                         (SELECT COUNT(*)
+                                          FROM seats s
+                                          WHERE s.venue_id = e.venue_id) AS total_seats,
              
-                    (SELECT COUNT(*)
-                     FROM reservation_seat rs
-                              JOIN reservations r ON rs.reservation_id = r.id
-                     WHERE rs.event_id = e.id
-                       AND r.status IN ('Confirmed', 'Pending')) as reserved_count,
-             
-                    (SELECT COUNT(*)
-                     FROM seats s
-                     WHERE s.venue_id = e.venue_id) - (SELECT COUNT(*)
-                                                       FROM reservation_seat rs
-                                                                JOIN reservations r ON rs.reservation_id = r.id
-                                                       WHERE rs.event_id = e.id
-                                                         AND r.status IN ('Confirmed', 'Pending')) as available_seats
-             FROM events e
-                      JOIN event_details ed ON e.id = ed.event_id   
-                      {whereClause}
-             ORDER BY e.event_date DESC
+                                         (SELECT COUNT(*)
+                                          FROM reservation_seat rs
+                                                   JOIN reservations r ON rs.reservation_id = r.id
+                                          WHERE rs.event_id = e.id
+                                            AND r.status IN ('Confirmed', 'Pending')) AS reserved_seats,
+                                         COUNT(*) OVER () AS total_count
+                                  FROM events e
+                                           JOIN event_details ed ON e.id = ed.event_id
+                                  {whereClause})
+             SELECT id,
+                    venue_id,
+                    name,
+                    type,
+                    event_date,
+                    start_date,
+                    end_date,
+                    status,
+                    info,
+                    capacity,
+                    description,
+                    total_seats,
+                    reserved_seats,
+                    total_seats - reserved_seats as available_seats, 
+                    ROUND(reserved_seats::decimal / total_seats * 100, 2) as popularity_percentage,
+                    total_count
+             FROM event_stats
+             {orderByClause}
              LIMIT @page_size OFFSET @offset
-             """, splitOn: "total_count", map: (@event, count) =>
+             """,
+            splitOn: "total_count", map: (@event, count) =>
             {
                 totalCount ??= count;
 
