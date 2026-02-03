@@ -33,4 +33,6 @@ public record EventDto
     public int AvailableSeats { get; init; }
 
     public int ReservedSeats { get; init; }
+
+    public double PopularityPercentage { get; init; }
 }
